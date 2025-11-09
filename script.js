@@ -1,29 +1,20 @@
 // ============================================
-// WAIT FOR DOM AND LIBRARIES TO LOAD
+// BELOVED STORY - MAIN SCRIPT
+// Optimized for Vercel deployment
 // ============================================
-window.addEventListener('DOMContentLoaded', initWebsite);
 
-function initWebsite() {
-    // Check if libraries are loaded
-    if (typeof Lenis === 'undefined' || typeof gsap === 'undefined') {
-        console.warn('Libraries not loaded yet, retrying...');
-        setTimeout(initWebsite, 100);
+// Wait for DOM and all libraries to load
+function initializeWebsite() {
+    // Check if all required libraries are loaded
+    if (typeof Lenis === 'undefined' || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+        setTimeout(initializeWebsite, 100);
         return;
     }
-    
-    initSmoothScroll();
-    initAnimations();
-    initInteractions();
-    initPerformanceOptimizations();
-}
 
-// ============================================
-// LENIS SMOOTH SCROLL INITIALIZATION
-// ============================================
-let lenis;
-
-function initSmoothScroll() {
-    lenis = new Lenis({
+    // ============================================
+    // LENIS SMOOTH SCROLL INITIALIZATION
+    // ============================================
+    const lenis = new Lenis({
         duration: 1.8,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         direction: 'vertical',
@@ -51,13 +42,18 @@ function initSmoothScroll() {
 
     gsap.ticker.lagSmoothing(0);
 
-    // Smooth scrolling for navigation links
+    // Make lenis globally accessible
+    window.lenis = lenis;
+
+    // ============================================
+    // SMOOTH SCROLLING FOR NAVIGATION LINKS
+    // ============================================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                lenis.scrollTo(target, {
+            if (target && window.lenis) {
+                window.lenis.scrollTo(target, {
                     offset: 0,
                     duration: 2,
                     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
@@ -65,12 +61,27 @@ function initSmoothScroll() {
             }
         });
     });
-}
 
-// ============================================
-// GSAP SCROLL ANIMATIONS
-// ============================================
-function initAnimations() {
+    // ============================================
+    // NAVBAR SCROLL EFFECT
+    // ============================================
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(26, 20, 16, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(212, 175, 55, 0.2)';
+            } else {
+                navbar.style.background = 'rgba(26, 20, 16, 0.95)';
+                navbar.style.boxShadow = '0 2px 20px rgba(212, 175, 55, 0.1)';
+            }
+        });
+    }
+
+    // ============================================
+    // GSAP SCROLL ANIMATIONS
+    // ============================================
+
     // Hero Section Animations
     gsap.from('.brand-name', {
         opacity: 0,
@@ -126,6 +137,7 @@ function initAnimations() {
             scrollTrigger: {
                 trigger: title,
                 start: 'top 85%',
+                end: 'top 60%',
                 toggleActions: 'play none none none'
             }
         });
@@ -141,6 +153,7 @@ function initAnimations() {
             scrollTrigger: {
                 trigger: subtitle,
                 start: 'top 85%',
+                end: 'top 60%',
                 toggleActions: 'play none none none'
             }
         });
@@ -157,6 +170,7 @@ function initAnimations() {
             scrollTrigger: {
                 trigger: card,
                 start: 'top 85%',
+                end: 'top 60%',
                 toggleActions: 'play none none none'
             },
             delay: index * 0.1
@@ -186,6 +200,7 @@ function initAnimations() {
         scrollTrigger: {
             trigger: '.about',
             start: 'top 70%',
+            end: 'top 40%',
             toggleActions: 'play none none none'
         }
     });
@@ -201,6 +216,7 @@ function initAnimations() {
         scrollTrigger: {
             trigger: '.about-features',
             start: 'top 80%',
+            end: 'top 50%',
             toggleActions: 'play none none none'
         }
     });
@@ -228,6 +244,7 @@ function initAnimations() {
             scrollTrigger: {
                 trigger: card,
                 start: 'top 90%',
+                end: 'top 60%',
                 toggleActions: 'play none none none'
             },
             delay: index * 0.15
@@ -245,6 +262,7 @@ function initAnimations() {
             scrollTrigger: {
                 trigger: item,
                 start: 'top 90%',
+                end: 'top 60%',
                 toggleActions: 'play none none none'
             },
             delay: index * 0.15
@@ -263,33 +281,10 @@ function initAnimations() {
             toggleActions: 'play none none none'
         }
     });
-}
 
-// ============================================
-// INTERACTIVE ELEMENTS
-// ============================================
-function initInteractions() {
-    // Navbar scroll effect
-    const navbar = document.querySelector('.navbar');
-    let ticking = false;
-    
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                if (window.scrollY > 100) {
-                    navbar.style.background = 'rgba(26, 20, 16, 0.98)';
-                    navbar.style.boxShadow = '0 2px 20px rgba(212, 175, 55, 0.2)';
-                } else {
-                    navbar.style.background = 'rgba(26, 20, 16, 0.95)';
-                    navbar.style.boxShadow = '0 2px 20px rgba(212, 175, 55, 0.1)';
-                }
-                ticking = false;
-            });
-            ticking = true;
-        }
-    }, { passive: true });
-
-    // View Product button functionality
+    // ============================================
+    // VIEW PRODUCT BUTTON FUNCTIONALITY
+    // ============================================
     document.querySelectorAll('.view-btn').forEach(button => {
         button.addEventListener('click', function() {
             const productName = this.closest('.product-card').querySelector('.product-name').textContent;
@@ -309,50 +304,42 @@ function initInteractions() {
         });
     });
 
-    // Golden sparkle effect on hero
-    initSparkleEffect();
-}
-
-// ============================================
-// GOLDEN SPARKLE EFFECT
-// ============================================
-let sparkleInterval;
-
-function initSparkleEffect() {
+    // ============================================
+    // GOLDEN SPARKLE EFFECT ON HERO
+    // ============================================
     const hero = document.querySelector('.hero');
-    
-    sparkleInterval = setInterval(() => {
-        const sparkle = document.createElement('div');
-        const size = Math.random() * 3 + 2;
-        sparkle.className = 'sparkle';
-        sparkle.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: radial-gradient(circle, #D4AF37 0%, #F4E4C1 50%, transparent 100%);
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            pointer-events: none;
-            z-index: 2;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
-        `;
-        hero.appendChild(sparkle);
-        
-        gsap.to(sparkle, {
-            opacity: 0,
-            scale: 2,
-            duration: 2.5,
-            ease: 'power2.out',
-            onComplete: () => sparkle.remove()
-        });
-    }, 2000);
-}
+    if (hero) {
+        setInterval(() => {
+            const sparkle = document.createElement('div');
+            const size = Math.random() * 3 + 2;
+            sparkle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: radial-gradient(circle, #D4AF37 0%, #F4E4C1 50%, transparent 100%);
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                pointer-events: none;
+                z-index: 2;
+                box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+            `;
+            hero.appendChild(sparkle);
+            
+            gsap.to(sparkle, {
+                opacity: 0,
+                scale: 2,
+                duration: 2.5,
+                ease: 'power2.out',
+                onComplete: () => sparkle.remove()
+            });
+        }, 2000);
+    }
 
-// ============================================
-// PERFORMANCE OPTIMIZATIONS
-// ============================================
-function initPerformanceOptimizations() {
+    // ============================================
+    // PERFORMANCE OPTIMIZATION
+    // ============================================
+
     // Reduce animations on mobile for performance
     if (window.innerWidth < 768) {
         ScrollTrigger.config({
@@ -361,32 +348,30 @@ function initPerformanceOptimizations() {
         });
     }
 
-    // Ensure sections are always visible (fallback)
-    ensureVisibility();
-
-    // Lazy load images
-    lazyLoadImages();
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', cleanup);
-}
-
-// Ensure critical sections are visible
-function ensureVisibility() {
-    const elements = [
-        ...document.querySelectorAll('.review-card'),
-        ...document.querySelectorAll('.contact-item'),
-        ...document.querySelectorAll('.section-title')
-    ];
-    
-    elements.forEach(el => {
-        el.style.opacity = '1';
-        el.style.visibility = 'visible';
+    // ============================================
+    // ENSURE SECTIONS ARE ALWAYS VISIBLE
+    // ============================================
+    const reviewCards = document.querySelectorAll('.review-card');
+    reviewCards.forEach(card => {
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
     });
-}
+    
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach(item => {
+        item.style.opacity = '1';
+        item.style.visibility = 'visible';
+    });
+    
+    const sectionTitles = document.querySelectorAll('.section-title');
+    sectionTitles.forEach(title => {
+        title.style.opacity = '1';
+        title.style.visibility = 'visible';
+    });
 
-// Lazy load images with Intersection Observer
-function lazyLoadImages() {
+    // ============================================
+    // LAZY LOAD IMAGES FOR BETTER PERFORMANCE
+    // ============================================
     const images = document.querySelectorAll('.product-image img');
     
     const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -418,17 +403,15 @@ function lazyLoadImages() {
         }
         imageObserver.observe(img);
     });
+
+    console.log('✨ Beloved Story website initialized successfully!');
 }
 
-// Cleanup function to prevent memory leaks
-function cleanup() {
-    if (sparkleInterval) {
-        clearInterval(sparkleInterval);
-    }
-    
-    if (lenis) {
-        lenis.destroy();
-    }
-    
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+// ============================================
+// INITIALIZE ON DOM READY
+// ============================================
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeWebsite);
+} else {
+    initializeWebsite();
 }

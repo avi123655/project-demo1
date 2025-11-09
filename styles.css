@@ -1,7 +1,18 @@
+/* ============================================
+   BELOVED STORY - PREMIUM JEWELLERY WEBSITE
+   Optimized for Vercel deployment
+   ============================================ */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
 }
 
 *,
@@ -37,6 +48,10 @@ body {
     background: var(--dark-bg);
     min-height: 100vh;
     text-rendering: optimizeLegibility;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 html.lenis {
